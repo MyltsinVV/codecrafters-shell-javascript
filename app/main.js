@@ -9,11 +9,30 @@ const rl = readline.createInterface({
 rl.prompt()
 
 rl.on('line', (line) => {
-  if (line === 'exit') {
-    rl.close()
-    return
-  }
+  const [command, ...props] = line.split(' ')
 
+  switch (command) {
+    case 'exit':
+      exit()
+      break
+    case 'echo':
+      echo(props)
+      break
+    default:
+      notFound(line)
+  }
+})
+
+function notFound (line) {
   console.log(`${line}: command not found`);
   rl.prompt()
-})
+}
+
+function exit() {
+  rl.close()
+}
+
+function echo(props) {
+  console.log(props.join(' '))
+  rl.prompt()
+}
