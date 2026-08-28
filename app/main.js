@@ -8,7 +8,12 @@ const rl = readline.createInterface({
 
 rl.prompt()
 
-rl.on("line", (line) => {
+rl.on('line', (line) => {
+  if (line === 'exit') {
+    rl.close()
+    return
+  }
+
   console.log(`${line}: command not found`);
   rl.prompt()
 })
