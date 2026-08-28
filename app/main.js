@@ -8,31 +8,48 @@ const rl = readline.createInterface({
 
 rl.prompt()
 
+const Commands = {
+  exit: 'exit',
+  echo: 'echo',
+  type: 'type'
+}
+
 rl.on('line', (line) => {
   const [command, ...props] = line.split(' ')
 
   switch (command) {
-    case 'exit':
-      exit()
+    case Commands.exit:
+      exit(props)
       break
-    case 'echo':
+    case Commands.echo:
       echo(props)
       break
+    case Commands.type:
+      type(props)
+      break
     default:
-      notFound(line)
+      notFound(command)
   }
+
+  rl.prompt()
 })
 
-function notFound (line) {
-  console.log(`${line}: command not found`);
-  rl.prompt()
+function notFound (command) {
+  console.log(`${command}: command not found`);
 }
 
-function exit() {
-  rl.close()
+function exit([code]) {
+  process.exit(Number(code) || 0)
 }
 
 function echo(props) {
   console.log(props.join(' '))
-  rl.prompt()
+}
+
+function type([command]) {
+  if (Commands[command]) {
+    console.log(`${command} is a shell builtin`)
+  } else {
+    console.log(`${command}: not found`)
+  }
 }
