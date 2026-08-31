@@ -1,6 +1,6 @@
-const readline = require("readline");
-const path = require("path");
-const fs = require("fs");
+import readline from "readline"
+import { spawnSync } from "child_process"
+import { findInPath } from "./utils.js"
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -30,14 +30,20 @@ rl.on('line', (line) => {
       type(props)
       break
     default:
-      notFound(command)
+      notFound(command, props)
   }
 
   rl.prompt()
 })
 
-function notFound (command) {
-  console.log(`${command}: command not found`);
+function notFound (command, props) {
+  const path = findInPath(command)
+
+  if (path) {
+    spawnSync(command, props, { stdio: 'inherit' })
+  } else {
+    console.log(`${command}: command not found`);
+  }
 }
 
 function exit([code]) {
@@ -48,29 +54,12 @@ function echo(props) {
   console.log(props.join(' '))
 }
 
-function findInPath(command) {
-  const dirs = process.env.PATH.split(path.delimiter)
-
-  for (const dir of dirs) {
-    if (!dir) continue
-
-    const dirPath = path.join(dir, command)
-    try {
-      fs.accessSync(dirPath, fs.constants.X_OK)
-      return dirPath
-    } catch (e) {
-
-    }
-  }
-
-  return null
-}
-
 function type([command]) {
   if (Commands[command]) {
     console.log(`${command} is a shell builtin`)
   } else {
     const path = findInPath(command)
+
     if (path) {
       console.log(`${command} is ${path}`)
     } else {
